@@ -24,9 +24,8 @@ import React from "react";
 import Joi from "joi-browser";
 import Form from "./common/form";
 import withRouter from "./hoc/getParaFromURL";
-import { getGenres } from "../services/fakeGenreService";
-import { getMovie, saveMovie } from "../services/fakeMovieService";
-import { replace } from "lodash";
+import { getMovie, saveMovie } from "../services/movieService";
+import { getGenres } from "../services/genereService";
 
 class MovieForm extends Form {
   state = {
@@ -51,29 +50,32 @@ class MovieForm extends Form {
       .label("Daily Rental Rate"),
   };
 
-  componentDidMount() {
-    //geting data from fakegeners files
-    const genres = getGenres();
+  async populateGenres() {
+    const { data: genres } = await getGenres();
     this.setState({ genres });
+  }
 
+  async populateMovies() {
     //take movie ID
+    try {
+      const movieId = this.props.params._id;
+      if (movieId === "new") return;
 
-    const movieId = this.props.params._id;
-    // console.log(this.props.params)
+      const { data: movie } = await getMovie(movieId);
+      this.setState({ data: this.mapToViewModel(movie) });
+    } catch (error) {
+      if (error.response && error.response.status === 404)
+        this.props.navigate("/not-fond");
+    }
+  }
 
-    // console.log('movieId', movieId);
-    if (movieId === "new") return;
+  async componentDidMount() {
+    //geting data from fakegeners files
 
-    //get movie given id
-
-    const movie = getMovie(movieId);
-    // console.log(movie)
-
-    if (!movie) return this.props.navigate("/not-fond");
-    console.log('return')
-
-    this.setState({ data: this.mapToViewModel(movie) });
-  } 
+    //this function do two task 1) populate genres and populate movie
+    await this.populateGenres();
+    await this.populateMovies();
+  }
 
   mapToViewModel(movie) {
     // console.log(movie,'ok')
@@ -86,8 +88,8 @@ class MovieForm extends Form {
     };
   }
 
-  handleSave(navigate) {
-    saveMovie(this.state.data);
+  async handleSave(navigate) {
+    await saveMovie(this.state.data);
     navigate("/movies", { replace: true });
   }
   render() {
