@@ -3,6 +3,7 @@ import Joi from "joi-browser";
 import Form from "./common/form";
 import auth from "../services/authServices";
 import withRouter from "./hoc/getParaFromURL";
+import { Navigate } from "react-router-dom";
 class LoginForm extends Form {
   state = {
     data: { username: "", password: "" },
@@ -18,7 +19,9 @@ class LoginForm extends Form {
       const { data } = this.state;
       await auth.login(data.username, data.password);
       // this.props.navigate("/");
-      window.location = "/";
+      window.location = this.props.location.state
+        ? this.props.location.state
+        : "/";
     } catch (ex) {
       console.log(ex);
       if (ex.response && ex.response.status === 400) {
@@ -30,6 +33,9 @@ class LoginForm extends Form {
   };
 
   render() {
+    console.log("looccca==>", this.props.location.state);
+    if (auth.currentUser()) return <Navigate to={"/"} />;
+
     return (
       <div>
         <h1>Login</h1>
