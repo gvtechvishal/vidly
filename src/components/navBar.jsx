@@ -37,8 +37,9 @@ class NavBar extends Component {
                 Rentals
               </NavLink>
             </li>
+
             {!user && (
-              <>
+              <React.Fragment>
                 <li className="nav-item">
                   <NavLink to="/login" className="nav-link">
                     Login
@@ -49,21 +50,21 @@ class NavBar extends Component {
                     Register
                   </NavLink>
                 </li>
-              </>
+              </React.Fragment>
             )}
             {user && (
-              <>
+              <React.Fragment>
                 <li className="nav-item">
                   <NavLink to="/profile" className="nav-link">
                     {user.name}
                   </NavLink>
                 </li>
                 <li className="nav-item">
-                  <NavLink to="/logout" className="nav-link">
-                    logout
+                  <NavLink to="/logout " className="nav-link">
+                    Logout
                   </NavLink>
                 </li>
-              </>
+              </React.Fragment>
             )}
           </ul>
         </div>

@@ -2,8 +2,8 @@ import React, { Component } from "react";
 import Joi from "joi-browser";
 import Form from "./common/form";
 import * as userService from "../services/userServices";
-import withRouter from "./hoc/getParaFromURL";
 import auth from "../services/authServices";
+import withRouter from "./hoc/getParaFromURL";
 
 class RegisterForm extends Form {
   state = {
@@ -21,8 +21,8 @@ class RegisterForm extends Form {
     try {
       const response = await userService.register(this.state.data);
       auth.loginWithJwt(response.headers["x-auth-token"]);
-      window.location = "/";
       // this.props.navigate("/");
+      window.location = "/";
     } catch (ex) {
       if (ex.response && ex.response.status === 400) {
         const errors = { ...this.state.errors };
